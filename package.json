@@ -1,0 +1,12 @@
+{
+  "name": "pi-branch-reviewer",
+  "version": "1.0.0",
+  "private": true,
+  "keywords": [
+    "pi-package"
+  ],
+  "pi": {
+    "skills": ["./skills"],
+    "agents": ["./agents"]
+  }
+}
