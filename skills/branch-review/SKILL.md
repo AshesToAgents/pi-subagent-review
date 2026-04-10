@@ -9,7 +9,7 @@ description: Smart branch review that classifies changed files and dispatches sp
 
 If the user provided a target branch argument, use that as `TARGET_BRANCH`.
 
-Otherwise, auto-detect the target branch. Run `git branch -a --list` to get all branches, then pick the first match from this priority list:
+Otherwise, auto-detect the target branch. Run `git branch -a --list 'dev' 'develop' 'main' 'master' '*/*dev' '*/*develop' '*/*main' '*/*master'` to only list candidate branches, then pick the first match from this priority list:
 
 1. `origin/dev`
 2. `dev`
