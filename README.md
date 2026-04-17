@@ -1,36 +1,30 @@
-# pi-branch-reviewer
+# pi-subagent-review
 
-A [pi package](https://github.com/mariozechner/pi-coding-agent) that performs smart code reviews on git branches by classifying changed files and dispatching specialized language/framework reviewers as parallel subagents.
-
-## How It Works
-
-1. **Detects the target branch** — automatically finds `dev`, `develop`, `main`, or `master` (or use a custom target)
-2. **Gathers the diff** — collects commit log, file stats, and full diff against the target branch
-3. **Classifies files** — maps changed files to the appropriate specialized reviewer(s)
-4. **Dispatches reviewers in parallel** — each reviewer gets only its relevant files and diff
-5. **Aggregates results** — compiles a structured report with critical issues, warnings, suggestions, and a final recommendation
-
-## Reviewers
-
-| Reviewer | Scope |
-|----------|-------|
-| **JS/TS** | Modern ES syntax, TypeScript strictness, async/await, null safety, import organization |
-| **React** | Hooks correctness, re-render optimization, component patterns, accessibility |
-| **PHP** | PHP 8+ features, type safety, PSR-12, error handling, dependency injection |
-| **Propel** | Propel ORM patterns, schema.xml, query efficiency, N+1 problems, migration safety |
-| **SQL** | Query performance, injection risks, index usage, migration safety, schema design |
+A [pi](https://github.com/mariozechner/pi-coding-agent) package that performs smart code reviews by classifying changed files and dispatching specialized reviewers as parallel subagents.
 
 ## Install
 
 ```bash
-pi install git:github.com/SunflowerFuchs/pi-subagent-review
+# Global (user-level)
+pi install ssh://git@github.com/SunflowerFuchs/pi-subagent-review.git
+
+# Project-level (shared with team via .pi/settings.json)
+pi install -l ssh://git@github.com/SunflowerFuchs/pi-subagent-review.git
+
+# Try without installing
+pi -e ssh://git@github.com/SunflowerFuchs/pi-subagent-review.git
 ```
 
-Or for the current session only:
+## What's Included
 
-```bash
-pi -e git:github.com/SunflowerFuchs/pi-subagent-review
-```
+| Type | Name | Description |
+|------|------|-------------|
+| Skill | `branch-review` | Orchestrates the multi-reviewer workflow |
+| Agent | `reviewer-js-ts` | JS/TS: modern syntax, TypeScript strictness, async/await, null safety, imports |
+| Agent | `reviewer-react` | React: hooks correctness, re-render optimization, component patterns, accessibility |
+| Agent | `reviewer-php` | PHP: PHP 8+ features, type safety, PSR-12, error handling, dependency injection |
+| Agent | `reviewer-propel` | Propel ORM: schema.xml, query efficiency, N+1 problems, migration safety |
+| Agent | `reviewer-sql` | SQL: query performance, injection risks, index usage, migration safety, schema design |
 
 ## Usage
 
@@ -41,9 +35,24 @@ Review my current branch
 Review my branch against main
 ```
 
-The `branch-review` skill will activate automatically based on the description match.
+The `branch-review` skill activates automatically based on the description match.
 
-## What's Included
+## How It Works
 
-- **Skill**: `branch-review` — orchestrates the multi-reviewer workflow
-- **Agents**: 5 specialized reviewers (`reviewer-js-ts`, `reviewer-react`, `reviewer-php`, `reviewer-propel`, `reviewer-sql`)
+1. **Detects the target branch** — automatically finds `dev`, `develop`, `main`, or `master` (or use a custom target)
+2. **Gathers the diff** — collects commit log, file stats, and full diff against the target branch
+3. **Classifies files** — maps changed files to the appropriate specialized reviewer(s)
+4. **Dispatches reviewers in parallel** — each reviewer gets only its relevant files and diff
+5. **Aggregates results** — compiles a structured report with critical issues, warnings, suggestions, and a final recommendation
+
+## Development
+
+```bash
+npm install
+npm run typecheck
+npm test
+```
+
+## License
+
+MIT

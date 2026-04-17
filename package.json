@@ -1,12 +1,17 @@
 {
-  "name": "pi-branch-reviewer",
+  "name": "pi-subagent-review",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "keywords": [
     "pi-package"
   ],
   "pi": {
-    "skills": ["./skills"],
-    "agents": ["./agents"]
+    "skills": [
+      "./skills"
+    ],
+    "agents": [
+      "./agents"
+    ]
   }
 }
