@@ -55,19 +55,19 @@ If no files match any reviewer bucket, inform the user that no specialized revie
 
 For each applicable reviewer bucket, dispatch a subagent **in parallel** using the `subagent` tool. All applicable reviewers MUST be dispatched in a single call with the `tasks` array parameter.
 
+**IMPORTANT:** The main agent MUST NOT read or include the actual diff content. Only pass the target branch reference and file list. The subagent will fetch the diff itself. This keeps the main agent's context clean and avoids wasting tokens on diff content it doesn't need.
+
 For each reviewer subagent, construct a task prompt like this:
 
 ```
 You are a specialized code reviewer. Review the following changes.
 
 Target branch: <TARGET_BRANCH>
-Changed files assigned to you: <FILE_LIST>
+Changed files assigned to you: <FILE_LIST> (space-separated file paths)
 
-Diff for these files:
-<paste the output of: git diff TARGET_BRANCH..HEAD -- file1 file2 ...>
-
-Related commits:
-<paste the output of: git log TARGET_BRANCH..HEAD --oneline -- file1 file2 ...>
+Your first action MUST be to run: git diff <TARGET_BRANCH>..HEAD -- <FILE_LIST>
+Also run: git log <TARGET_BRANCH>..HEAD --oneline -- <FILE_LIST>
+Use the output of both commands to perform your review.
 
 Follow the review guidelines from your agent definition. Return your findings in this exact format:
 
