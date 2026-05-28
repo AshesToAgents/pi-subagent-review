@@ -1,15 +1,30 @@
 ---
 name: branch-review
-description: Smart branch review that classifies changed files and dispatches specialized language/framework reviewers as parallel subagents. Use when you need to review changes on the current branch against a target branch.
+description: Smart branch review that classifies changed files and dispatches specialized language/framework reviewers as parallel subagents. Use when you need to review changes on the current branch or another specified branch against a target branch.
 ---
 
 # Smart Branch Review
 
-## Phase 1: Determine Target Branch
+## Phase 1: Determine Source and Target Branches
 
-If the user provided a target branch argument, use that as `TARGET_BRANCH`.
+Parse the user's request to identify the source and target branches. Typical patterns:
+- "review against dev" → source: current branch, target: dev
+- "review refactor/LP-1234 against dev" → source: refactor/LP-1234, target: dev
+- "review refactor/LP-1234" → source: refactor/LP-1234, target: auto-detect
+- No arguments → source: current branch, target: auto-detect
 
-Otherwise, auto-detect the target branch. Run `git branch -a --list 'dev' 'develop' 'main' 'master' '*/*dev' '*/*develop' '*/*main' '*/*master'` to only list candidate branches, then pick the first match from this priority list:
+### Resolve Branch References
+
+For both source and target branches, prefer remote references over local ones. Given a branch name (e.g. `dev`), resolve it using this logic:
+
+1. Run `git branch -a --list '<name>' 'remotes/<name>' '*/<name>'` to find matching local and remote branches.
+2. If a remote reference exists (e.g. `origin/dev`), use it. Prefer `origin/<name>` over other remotes.
+3. If only a local branch exists, use the local name as-is.
+4. If the branch name already contains a remote prefix (e.g. `origin/dev`), use it directly.
+
+### Auto-Detect Target Branch
+
+If no target branch was specified by the user, auto-detect it. Run `git branch -a --list 'dev' 'develop' 'main' 'master' '*/*dev' '*/*develop' '*/*main' '*/*master'` to list candidate branches, then pick the first match from this priority list (applying the remote-preference rule above):
 
 1. `origin/dev`
 2. `dev`
@@ -22,14 +37,24 @@ Otherwise, auto-detect the target branch. Run `git branch -a --list 'dev' 'devel
 
 If none of these branches exist, inform the user and stop.
 
+### Source Branch
+
+If no source branch was specified by the user, use the current branch: `SOURCE_BRANCH` = result of `git branch --show-current`. Apply the same remote-preference resolution to the source branch as well.
+
+If the source branch is the current branch, the diff range is `<TARGET_BRANCH>..HEAD`. If the source branch is a different branch, the diff range is `<TARGET_BRANCH>..<SOURCE_BRANCH>`.
+
 ## Phase 2: Gather Change Overview
 
-Using the `TARGET_BRANCH` determined in Phase 1, run these git commands:
+Using the `TARGET_BRANCH` and `SOURCE_BRANCH` determined in Phase 1, determine the diff range:
+- If source is the current branch: `DIFF_RANGE = <TARGET_BRANCH>..HEAD`
+- If source is a different branch: `DIFF_RANGE = <TARGET_BRANCH>..<SOURCE_BRANCH>`
+
+Run these git commands:
 
 - `git branch --show-current` — to get the current branch name
-- `git log <TARGET_BRANCH>..HEAD --oneline` — to list commits since divergence
-- `git diff <TARGET_BRANCH>..HEAD --stat` — for a file change summary
-- `git diff <TARGET_BRANCH>..HEAD --name-only` — for the list of changed files
+- `git log <DIFF_RANGE> --oneline` — to list commits since divergence
+- `git diff <DIFF_RANGE> --stat` — for a file change summary
+- `git diff <DIFF_RANGE> --name-only` — for the list of changed files
 
 ## Phase 3: Classify Changed Files
 
@@ -63,10 +88,11 @@ For each reviewer subagent, construct a task prompt like this:
 You are a specialized code reviewer. Review the following changes.
 
 Target branch: <TARGET_BRANCH>
+Source branch: <SOURCE_BRANCH> (or HEAD if current branch)
 Changed files assigned to you: <FILE_LIST> (space-separated file paths)
 
-Your first action MUST be to run: git diff <TARGET_BRANCH>..HEAD -- <FILE_LIST>
-Also run: git log <TARGET_BRANCH>..HEAD --oneline -- <FILE_LIST>
+Your first action MUST be to run: git diff <DIFF_RANGE> -- <FILE_LIST>
+Also run: git log <DIFF_RANGE> --oneline -- <FILE_LIST>
 Use the output of both commands to perform your review.
 
 Follow the review guidelines from your agent definition. Return your findings in this exact format:
@@ -113,10 +139,10 @@ Once all subagent reviewers have returned their results, compile the final revie
 
 ---
 
-# Branch Review: `<current_branch>` → `<TARGET_BRANCH>`
+# Branch Review: `<SOURCE_BRANCH>` → `<TARGET_BRANCH>`
 
 ## Overview
-- **Branch**: `<current_branch>`
+- **Source**: `<SOURCE_BRANCH>` (or current branch if HEAD)
 - **Target**: `<TARGET_BRANCH>`
 - **Commits**: <number of commits>
 - **Files changed**: <number of files>
