@@ -41,13 +41,13 @@ If none of these branches exist, inform the user and stop.
 
 If no source branch was specified by the user, use the current branch: `SOURCE_BRANCH` = result of `git branch --show-current`. Apply the same remote-preference resolution to the source branch as well.
 
-If the source branch is the current branch, the diff range is `<TARGET_BRANCH>..HEAD`. If the source branch is a different branch, the diff range is `<TARGET_BRANCH>..<SOURCE_BRANCH>`.
+Use three-dot diff ranges to show only changes on the source branch since it diverged from the target (not changes the target received from other branches). If the source branch is the current branch, the diff range is `<TARGET_BRANCH>...HEAD`. If the source branch is a different branch, the diff range is `<TARGET_BRANCH>...<SOURCE_BRANCH>`.
 
 ## Phase 2: Gather Change Overview
 
-Using the `TARGET_BRANCH` and `SOURCE_BRANCH` determined in Phase 1, determine the diff range:
-- If source is the current branch: `DIFF_RANGE = <TARGET_BRANCH>..HEAD`
-- If source is a different branch: `DIFF_RANGE = <TARGET_BRANCH>..<SOURCE_BRANCH>`
+Using the `TARGET_BRANCH` and `SOURCE_BRANCH` determined in Phase 1, determine the diff range. **Always use three dots (`...`)** to diff from the merge base, so only the source branch's own changes are included:
+- If source is the current branch: `DIFF_RANGE = <TARGET_BRANCH>...HEAD`
+- If source is a different branch: `DIFF_RANGE = <TARGET_BRANCH>...<SOURCE_BRANCH>`
 
 Run these git commands:
 
