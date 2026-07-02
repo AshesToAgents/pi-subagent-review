@@ -25,6 +25,9 @@ pi -e ssh://git@github.com/SunflowerFuchs/pi-subagent-review.git
 | Agent | `reviewer-php` | PHP: PHP 8+ features, type safety, PSR-12, error handling, dependency injection |
 | Agent | `reviewer-propel` | Propel ORM: schema.xml, query efficiency, N+1 problems, migration safety |
 | Agent | `reviewer-sql` | SQL: query performance, injection risks, index usage, migration safety, schema design |
+| Agent | `reviewer-blade` | Blade: output escaping/XSS, directive correctness, render-mode integrity, stale relation calls |
+| Agent | `reviewer-scss-theming` | SCSS/theming: custom-property role tokens, var(--token, fallback) contracts, theme-vs-component specificity |
+| Agent | `reviewer-api-contract` | API contract: route→controller→Resource→OpenAPI→generated-TS symmetry, typed Resource shapes, drift |
 
 ## Usage
 

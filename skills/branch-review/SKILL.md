@@ -68,6 +68,17 @@ Analyze the list of changed files and classify them into reviewer buckets. A fil
 - `schema.xml` files
 - PHP files containing Propel references (check with grep for `Propel`, `BaseObject`, `BasePeer`, `Criteria`)
 
+**Blade Reviewer** — files matching `*.blade.php` (Blade templates in any `views/`, `resources/views/`, `emails/`, or component directory)
+
+**SCSS / Theming Reviewer** — files matching `*.scss`, `*.css`, and theme-contract markdown (any `*.md` under or near a `themes/` directory, e.g. `THEME*.md`/`COLORS*.md`/tokens specs). A single SCSS file may touch both component defaults and theme overrides — assign the whole file to this reviewer.
+
+**API Contract Reviewer** — files that define or expose the HTTP contract. These include:
+- OpenAPI specs: `api.json`, `openapi.json`, `openapi.yaml`, or any `*api*.json` / `*-openapi.*` file
+- PHP files in any `Http/Resources/` directory (JSON Resource classes)
+- Route files: `routes/api*.php` and any `routes/*.php` explicitly tied to JSON API endpoints
+- Generated client type files / directories that mirror the spec (e.g. `types/api/*`, `src/types/api/*` or similar codegen output)
+These may overlap with the PHP/JS-TS reviewers; a file can belong to multiple buckets.
+
 **JS/TS Reviewer** — files matching `*.js`, `*.jsx`, `*.ts`, `*.tsx`
 
 **React Reviewer** — JS/TS files that import from `react`, `react-dom`, or contain JSX/TSX component patterns. Check file contents with grep for `from 'react'`, `from "react"`, `React.Component`, `useState`, `useEffect`.
@@ -115,9 +126,12 @@ Follow the review guidelines from your agent definition. Return your findings in
 Map the reviewer buckets to these subagent agent names:
 
 | Bucket | Agent Name |
-|--------|-----------|
+|--------|------------|
 | PHP files | `reviewer-php` |
 | Propel files | `reviewer-propel` |
+| Blade templates | `reviewer-blade` |
+| SCSS / theming files | `reviewer-scss-theming` |
+| API contract files | `reviewer-api-contract` |
 | JS/TS files | `reviewer-js-ts` |
 | React files | `reviewer-react` |
 | SQL files | `reviewer-sql` |
