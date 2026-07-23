@@ -6,13 +6,13 @@ A [pi](https://github.com/earendil-works/pi) package that performs smart code re
 
 ```bash
 # Global (user-level)
-pi install ssh://git@github.com/SunflowerFuchs/pi-subagent-review.git
+pi install ssh://git@github.com/AshesToAgents/pi-subagent-review.git
 
 # Project-level (shared with team via .pi/settings.json)
-pi install -l ssh://git@github.com/SunflowerFuchs/pi-subagent-review.git
+pi install -l ssh://git@github.com/AshesToAgents/pi-subagent-review.git
 
 # Try without installing
-pi -e ssh://git@github.com/SunflowerFuchs/pi-subagent-review.git
+pi -e ssh://git@github.com/AshesToAgents/pi-subagent-review.git
 ```
 
 ## What's Included
