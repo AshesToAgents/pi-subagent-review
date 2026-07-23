@@ -1,6 +1,6 @@
 # pi-subagent-review
 
-A [pi](https://github.com/mariozechner/pi-coding-agent) package that performs smart code reviews by classifying changed files and dispatching specialized reviewers as parallel subagents.
+A [pi](https://github.com/earendil-works/pi) package that performs smart code reviews by classifying changed files and dispatching specialized reviewers as parallel subagents.
 
 ## Install
 
