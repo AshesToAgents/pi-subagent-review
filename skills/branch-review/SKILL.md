@@ -85,6 +85,8 @@ These may overlap with the PHP/JS-TS reviewers; a file can belong to multiple bu
 
 **SQL Reviewer** — files matching `*.sql`, or migration files (files in directories named `migrations/`, `migrate/`, or containing `migration` in the name)
 
+**Rust Reviewer** — files matching `*.rs` (including `build.rs` and `main.rs`/`lib.rs`), and `Cargo.toml` (manifest changes: dependencies, feature flags, edition/MSRV). Exclude `Cargo.lock` — it is generated output.
+
 If no files match any reviewer bucket, inform the user that no specialized reviewers are applicable and provide a brief general summary of the changes instead.
 
 ## Phase 4: Dispatch Reviewer Subagents
@@ -135,6 +137,7 @@ Map the reviewer buckets to these subagent agent names:
 | JS/TS files | `reviewer-js-ts` |
 | React files | `reviewer-react` |
 | SQL files | `reviewer-sql` |
+| Rust files | `reviewer-rust` |
 
 Use the parallel dispatch pattern:
 
