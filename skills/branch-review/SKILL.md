@@ -103,41 +103,42 @@ You are a specialized code reviewer. Review the following changes.
 Target branch: <TARGET_BRANCH>
 Source branch: <SOURCE_BRANCH> (or HEAD if current branch)
 Changed files assigned to you: <FILE_LIST> (space-separated file paths)
+Your reviewer tag: <REVIEWER_TAG> (short lowercase id, e.g. php, js-ts, scss)
 
 Your first action MUST be to run: git diff <DIFF_RANGE> -- <FILE_LIST>
 Also run: git log <DIFF_RANGE> --oneline -- <FILE_LIST>
 Use the output of both commands to perform your review.
 
-Follow the review guidelines from your agent definition. Return your findings in this exact format:
+Follow the review guidelines from your agent definition. Return your findings in this exact format — one tagged line per finding, ordered critical → warning → suggestion:
 
-## <Reviewer Name> Review
+[<REVIEWER_TAG>][critical] <finding: what is wrong, where (exact file:line), why it matters, how to fix it>
+[<REVIEWER_TAG>][warning] <finding>
+[<REVIEWER_TAG>][suggestion] <finding>
+[<REVIEWER_TAG>][critical] none
+[<REVIEWER_TAG>][warning] none
+[<REVIEWER_TAG>][suggestion] none
+notes: <1-2 sentences: what you verified and your overall assessment>
 
-### Critical Issues
-<numbered list, or "None found.">
-
-### Warnings
-<numbered list, or "None found.">
-
-### Suggestions
-<numbered list, or "None found.">
-
-### Summary
-<1-2 sentence overall assessment from this reviewer's perspective>
+Rules:
+- One line per finding; for each severity with no findings, emit a single "none" line (no explanation)
+- Reference exact file names and line numbers from the diff
+- Put verification rationale (what you checked and found clean) in the notes line, never in findings
+- No markdown headers, bold, or nested lists — plain tagged lines only
 ```
 
 Map the reviewer buckets to these subagent agent names:
 
-| Bucket | Agent Name |
-|--------|------------|
-| PHP files | `reviewer-php` |
-| Propel files | `reviewer-propel` |
-| Blade templates | `reviewer-blade` |
-| SCSS / theming files | `reviewer-scss-theming` |
-| API contract files | `reviewer-api-contract` |
-| JS/TS files | `reviewer-js-ts` |
-| React files | `reviewer-react` |
-| SQL files | `reviewer-sql` |
-| Rust files | `reviewer-rust` |
+| Bucket | Agent Name | Tag |
+|--------|------------|-----|
+| PHP files | `reviewer-php` | `php` |
+| Propel files | `reviewer-propel` | `propel` |
+| Blade templates | `reviewer-blade` | `blade` |
+| SCSS / theming files | `reviewer-scss-theming` | `scss` |
+| API contract files | `reviewer-api-contract` | `api` |
+| JS/TS files | `reviewer-js-ts` | `js-ts` |
+| React files | `reviewer-react` | `react` |
+| SQL files | `reviewer-sql` | `sql` |
+| Rust files | `reviewer-rust` | `rust` |
 
 Use the parallel dispatch pattern:
 
@@ -152,7 +153,17 @@ subagent({
 
 ## Phase 5: Aggregate Results
 
-Once all subagent reviewers have returned their results, compile the final review in this format:
+Once all subagent reviewers have returned their results, merge them into a single severity-first report. The merge is mechanical — do not reword, re-rank, or drop findings:
+
+- Collect every `[tag][severity]` line from all reviewers and drop their `none` lines
+- Group by severity: all critical findings first, then warnings, then suggestions
+- Within each severity group, keep reviewer dispatch order
+- Each reviewer's `notes:` line becomes one bullet under Reviewer notes
+- If a reviewer returned nonconforming output (free-form prose instead of tagged lines), map its points into tagged findings at the fitting severity and put the remainder in its Reviewer notes bullet
+
+Format every finding as `<n>. **[<tag>]** <finding text>` — the tag stays bold at the start of the entry, numbered continuously within each severity group.
+
+Compile the final review in this format:
 
 ---
 
@@ -164,9 +175,21 @@ Once all subagent reviewers have returned their results, compile the final revie
 - **Commits**: <number of commits>
 - **Files changed**: <number of files>
 
-## Reviewer Reports
+## Critical
 
-<Insert each reviewer's section here, in order: Critical issues first, then Warnings, then Suggestions>
+<numbered list of all critical findings across all reviewers, or "None across all reviewers.">
+
+## Warnings
+
+<numbered list of all warnings across all reviewers, or "None across all reviewers.">
+
+## Suggestions
+
+<numbered list of all suggestions across all reviewers, or "None across all reviewers.">
+
+## Reviewer notes
+
+- **<tag>** — <the reviewer's notes line> (one bullet per reviewer, in dispatch order)
 
 ## Summary
 
