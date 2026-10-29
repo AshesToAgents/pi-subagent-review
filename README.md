@@ -29,6 +29,7 @@ pi -e ssh://git@github.com/AshesToAgents/pi-subagent-review.git
 | Agent | `reviewer-scss-theming` | SCSS/theming: custom-property role tokens, var(--token, fallback) contracts, theme-vs-component specificity |
 | Agent | `reviewer-api-contract` | API contract: route→controller→Resource→OpenAPI→generated-TS symmetry, typed Resource shapes, drift |
 | Agent | `reviewer-rust` | Rust: memory safety, panic avoidance, async correctness, unsafe code scrutiny, idiomatic patterns, Cargo.toml deps |
+| Agent | `reviewer-general` | General fallback: any language, docs, config, CI, scripts — conservative severity, cross-cutting concerns (secrets, error handling, dead code) |
 
 ## Usage
 

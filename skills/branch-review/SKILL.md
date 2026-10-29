@@ -87,7 +87,7 @@ These may overlap with the PHP/JS-TS reviewers; a file can belong to multiple bu
 
 **Rust Reviewer** — files matching `*.rs` (including `build.rs` and `main.rs`/`lib.rs`), and `Cargo.toml` (manifest changes: dependencies, feature flags, edition/MSRV). Exclude `Cargo.lock` — it is generated output.
 
-If no files match any reviewer bucket, inform the user that no specialized reviewers are applicable and provide a brief general summary of the changes instead.
+**General Reviewer (fallback)** — any changed file not claimed by one of the buckets above. This includes sources in languages without a dedicated reviewer, docs, config files, CI pipelines, Dockerfiles, and scripts. Files claimed by a specialized bucket are NOT duplicated into this bucket. Assign files here only after evaluating all specialized buckets; this bucket must be non-empty whenever any changed file matched nothing else.
 
 ## Phase 4: Dispatch Reviewer Subagents
 
@@ -139,6 +139,7 @@ Map the reviewer buckets to these subagent agent names:
 | React files | `reviewer-react` | `react` |
 | SQL files | `reviewer-sql` | `sql` |
 | Rust files | `reviewer-rust` | `rust` |
+| Leftover/unclassified files | `reviewer-general` | `general` |
 
 Use the parallel dispatch pattern:
 
